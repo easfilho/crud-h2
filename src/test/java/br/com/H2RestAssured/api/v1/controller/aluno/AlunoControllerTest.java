@@ -42,8 +42,8 @@ public class AlunoControllerTest {
         alunoRepository.saveAll(alunos);
 
         RestAssured
-                .get("/v1/alunos").
-                then()
+                .get("/v1/alunos")
+                .then()
                 .assertThat()
                 .body("nome", Matchers.hasItems("Caterine", "Isabele"))
                 .body("turma", Matchers.hasItems("t1", "t2"))
@@ -51,11 +51,28 @@ public class AlunoControllerTest {
     }
 
     @Test
+    public void deveRetornarUmaListaDeAlunosFiltrandoPorNome() {
+        List<Aluno> alunos = Arrays.asList(new Aluno("Caterine", "t1")
+                , new Aluno("Isabele", "t2"));
+        alunoRepository.saveAll(alunos);
+
+        RestAssured
+                .given()
+                .queryParam("nome", "cat")
+                .get("/v1/alunos")
+                .then()
+                .assertThat()
+                .body("nome", Matchers.hasItems("Caterine"))
+                .body("turma", Matchers.hasItems("t1"))
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
     public void deveRetornarUmAluno() {
         Aluno aluno = alunoRepository.save(new Aluno("Sofia", "t1"));
         RestAssured
-                .get("/v1/alunos/{id}", aluno.getId()).
-                then()
+                .get("/v1/alunos/{id}", aluno.getId())
+                .then()
                 .body("idAluno", Matchers.equalTo(aluno.getId().intValue()))
                 .body("nome", Matchers.equalTo("Sofia"))
                 .body("turma", Matchers.equalTo("t1"))

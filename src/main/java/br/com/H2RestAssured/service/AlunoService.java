@@ -16,8 +16,8 @@ public class AlunoService {
         this.alunoRepository = alunoRepository;
     }
 
-    public List<Aluno> listar() {
-        return (List<Aluno>) alunoRepository.findAll();
+    public List<Aluno> listar(String nome) {
+        return alunoRepository.findByNomeContainingIgnoreCase(nome);
     }
 
     public Aluno consultar(Long id) {
