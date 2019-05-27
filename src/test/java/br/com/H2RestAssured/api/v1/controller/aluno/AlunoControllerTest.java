@@ -94,6 +94,18 @@ public class AlunoControllerTest {
     }
 
     @Test
+    public void deveValidarInclusaoDeAlunoSemNome() {
+          RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .body("{ \"turma\": \"t3\"}")
+                .post("/v1/alunos")
+                .then()
+                .body("errors[0].defaultMessage", Matchers.equalTo("Nome é obrigatório"))
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     public void deveAtualizarUmAluno() {
         Aluno aluno = alunoRepository.save(new Aluno("Mariana", "t9"));
         RestAssured

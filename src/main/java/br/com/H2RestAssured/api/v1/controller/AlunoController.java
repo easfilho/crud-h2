@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -58,7 +59,7 @@ public class AlunoController implements V1 {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Listagem realizada com sucesso", response = AlunoOutputDto.class),
     })
-    public ResponseEntity<?> incluir(@RequestBody AlunoInputDto alunoInputDto) {
+    public ResponseEntity<?> incluir(@Valid @RequestBody AlunoInputDto alunoInputDto) {
         ModelMapper modelMapper = new ModelMapper();
         Aluno aluno = modelMapper.map(alunoInputDto, Aluno.class);
         aluno = alunoService.incluir(aluno);
