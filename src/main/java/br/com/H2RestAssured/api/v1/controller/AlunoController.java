@@ -1,5 +1,6 @@
 package br.com.H2RestAssured.api.v1.controller;
 
+import br.com.H2RestAssured.api.error.ErroDto;
 import br.com.H2RestAssured.api.v1.V1;
 import br.com.H2RestAssured.api.v1.dto.AlunoInputDto;
 import br.com.H2RestAssured.api.v1.dto.AlunoOutputDto;
@@ -13,9 +14,19 @@ import io.swagger.annotations.ApiResponses;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.security.InvalidParameterException;
 import java.util.List;
 
 @RestController
@@ -62,9 +73,18 @@ public class AlunoController implements V1 {
     public ResponseEntity<?> incluir(@Valid @RequestBody AlunoInputDto alunoInputDto) {
         ModelMapper modelMapper = new ModelMapper();
         Aluno aluno = modelMapper.map(alunoInputDto, Aluno.class);
-        aluno = alunoService.incluir(aluno);
-        AlunoOutputDto alunoOutputDto = alunoMapper.criar(aluno);
-        return ResponseEntity.status(HttpStatus.CREATED).body(alunoOutputDto);
+        try {
+            aluno = alunoService.incluir(aluno);
+            AlunoOutputDto alunoOutputDto = alunoMapper.criar(aluno);
+            return ResponseEntity.status(HttpStatus.CREATED).body(alunoOutputDto);
+        } catch (InvalidParameterException e) {
+            ErroDto erroDto = new ErroDto(e.getMessage());
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(erroDto);
+        } catch (Exception e) {
+            ErroDto erroDto = new ErroDto(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erroDto);
+        }
+
     }
 
     @RequestMapping(value = "/alunos/{id}", method = RequestMethod.PUT)

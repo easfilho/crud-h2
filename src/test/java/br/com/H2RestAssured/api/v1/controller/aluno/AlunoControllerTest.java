@@ -106,6 +106,18 @@ public class AlunoControllerTest {
     }
 
     @Test
+    public void deveValidarInclusaoDeAlunoComTurmaQueNaoComecaComLetraT() {
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .body("{\"nome\": \"Stella\", \"turma\": \"W3\"}")
+                .post("/v1/alunos")
+                .then()
+                .body("mensagem", Matchers.equalTo("Turma do aluno deve começar com a letra T"))
+                .statusCode(HttpStatus.EXPECTATION_FAILED.value());
+    }
+
+    @Test
     public void deveAtualizarUmAluno() {
         Aluno aluno = alunoRepository.save(new Aluno("Mariana", "t9"));
         RestAssured

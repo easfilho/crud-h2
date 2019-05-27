@@ -5,6 +5,7 @@ import br.com.H2RestAssured.model.Aluno;
 import br.com.H2RestAssured.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 @Service
@@ -25,6 +26,7 @@ public class AlunoService {
     }
 
     public Aluno incluir(Aluno aluno) {
+        validarInclusao(aluno);
         return alunoRepository.save(aluno);
     }
 
@@ -41,5 +43,11 @@ public class AlunoService {
 
     public void excluir(Long id) {
         alunoRepository.deleteById(id);
+    }
+
+    private void validarInclusao(Aluno aluno) {
+        if (!aluno.getTurma().startsWith("t") && !aluno.getTurma().startsWith("T")) {
+            throw new InvalidParameterException("Turma do aluno deve começar com a letra T");
+        }
     }
 }
